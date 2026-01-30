@@ -321,13 +321,13 @@ main {
 }
 
 .piece.moon {
-    width: 60%;
-    height: 60%;
+    width: 55%;
+    height: 55%;
     border-radius: 50%;
     background: transparent;
-    box-shadow: -4px 0 0 2px var(--moon-color),
-        -4px 0 8px rgba(66, 165, 245, 0.4);
-    transform: translateX(4px);
+    box-shadow: -6px 0 0 4px var(--moon-color),
+        -6px 0 10px rgba(66, 165, 245, 0.4);
+    transform: translateX(6px);
 }
 
 /* Symbols */
