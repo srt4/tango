@@ -129,25 +129,35 @@ class UI {
     }
 
     handleShare() {
-        // Seed-based URL: just size and seed
         const size = this.game.size;
         const seed = this.game.seed;
+        const url = `${window.location.origin}${window.location.pathname}?g=${size}:${seed}`;
         
-        const url = new URL(window.location);
-        url.searchParams.set('g', `${size}:${seed}`);
-        const urlString = url.toString();
+        navigator.clipboard.writeText(url).then(() => {
+            this.showToast('Link copied to clipboard!');
+        });
+    }
 
-        // Try modern clipboard API first
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(urlString).then(() => {
-                this.showShareSuccess();
-            }).catch((err) => {
-                console.error('Clipboard API failed:', err);
-                this.fallbackCopyToClipboard(urlString);
-            });
-        } else {
-            this.fallbackCopyToClipboard(urlString);
-        }
+    showToast(message) {
+        // Remove any existing toast
+        const existing = document.querySelector('.toast-notification');
+        if (existing) existing.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-notification';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        // Trigger animation
+        requestAnimationFrame(() => {
+            toast.classList.add('show');
+        });
+        
+        // Remove after delay
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
     }
 
     handleKeydown(e) {
@@ -610,67 +620,11 @@ class UI {
     }
 
     sharePuzzle(size, seed) {
-        const url = new URL(window.location.origin + window.location.pathname);
-        url.searchParams.set('g', `${size}:${seed}`);
-        const urlString = url.toString();
+        const url = `${window.location.origin}${window.location.pathname}?g=${size}:${seed}`;
         
-        // Try modern clipboard API first
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(urlString).then(() => {
-                this.showShareSuccess();
-            }).catch((err) => {
-                console.error('Clipboard API failed:', err);
-                // Fallback to textarea method
-                this.fallbackCopyToClipboard(urlString);
-            });
-        } else {
-            // Use fallback for browsers without clipboard API
-            this.fallbackCopyToClipboard(urlString);
-        }
-    }
-
-    fallbackCopyToClipboard(text) {
-        // Create temporary textarea
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.left = '-9999px';
-        textarea.style.top = '0';
-        document.body.appendChild(textarea);
-        
-        try {
-            textarea.focus();
-            textarea.select();
-            textarea.setSelectionRange(0, textarea.value.length);
-            
-            const successful = document.execCommand('copy');
-            if (successful) {
-                this.showShareSuccess();
-            } else {
-                this.showShareError();
-            }
-        } catch (err) {
-            console.error('Fallback copy failed:', err);
-            this.showShareError();
-        } finally {
-            document.body.removeChild(textarea);
-        }
-    }
-
-    showShareSuccess() {
-        this.messageArea.textContent = "Puzzle link copied to clipboard!";
-        this.messageArea.className = 'message-area success';
-        setTimeout(() => {
-            this.messageArea.className = 'message-area hidden';
-        }, 3000);
-    }
-
-    showShareError() {
-        this.messageArea.textContent = "Failed to copy link. Please copy manually.";
-        this.messageArea.className = 'message-area';
-        setTimeout(() => {
-            this.messageArea.className = 'message-area hidden';
-        }, 3000);
+        navigator.clipboard.writeText(url).then(() => {
+            this.showToast('Link copied to clipboard!');
+        });
     }
 
     viewPuzzle(size, seed) {
