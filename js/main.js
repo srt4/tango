@@ -1,18 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
     const defaultSize = 6;
     const game = new Game(defaultSize);
-    const ui = new UI(game);
+    const history = new SolveHistory();
+    const ui = new UI(game, history);
 
     // Initial Start
     const urlParams = new URLSearchParams(window.location.search);
-    const levelStr = urlParams.get('l'); // New compact format
-    const legacyStr = urlParams.get('level'); // Old format for backwards compat
+    const gameParam = urlParams.get('g'); // Seed-based format: size:seed
+    const legacyParam = urlParams.get('l'); // Old compact format
+    const oldLegacyParam = urlParams.get('level'); // Very old JSON format
     let levelData = null;
 
-    if (levelStr) {
+    if (gameParam) {
+        // New seed-based format: ?g=6:abc12345
         try {
-            // Decode base64url back to base64
-            const base64 = levelStr.replace(/-/g, '+').replace(/_/g, '/') + '==';
+            const [sizeStr, seed] = gameParam.split(':');
+            levelData = {
+                size: parseInt(sizeStr),
+                seed: seed
+            };
+        } catch (e) {
+            console.error("Failed to parse seed-based level", e);
+        }
+    } else if (legacyParam) {
+        // Try to decode old compact format
+        try {
+            const base64 = legacyParam.replace(/-/g, '+').replace(/_/g, '/') + '==';
             const decoded = atob(base64);
             const [size, boardStr, hStr, vStr] = decoded.split('|');
             
@@ -37,9 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             console.error("Failed to parse compact level", e);
         }
-    } else if (legacyStr) {
+    } else if (oldLegacyParam) {
+        // Very old JSON format
         try {
-            levelData = JSON.parse(atob(legacyStr));
+            levelData = JSON.parse(atob(oldLegacyParam));
         } catch (e) {
             console.error("Failed to parse legacy level", e);
         }

@@ -1,6 +1,7 @@
 class UI {
-    constructor(game) {
+    constructor(game, history) {
         this.game = game;
+        this.history = history || new SolveHistory();
         this.boardElement = document.getElementById('game-board');
         this.messageArea = document.getElementById('message-area');
         this.timerElement = document.getElementById('timer');
@@ -8,6 +9,7 @@ class UI {
 
         this.timerInterval = null;
         this.seconds = 0;
+        this.moveCount = 0;
 
         this.validationTimeout = null;
 
@@ -76,6 +78,29 @@ class UI {
             this.handleShare();
         });
 
+        document.getElementById('stats-btn').addEventListener('click', () => {
+            this.showStats();
+        });
+
+        document.getElementById('close-stats').addEventListener('click', () => {
+            this.hideStats();
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tab = e.target.dataset.tab;
+                this.switchStatsTab(tab);
+            });
+        });
+
+        // Close modal on backdrop click
+        document.getElementById('stats-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'stats-modal') {
+                this.hideStats();
+            }
+        });
+
         // Check for shared level on load
         // This is called once on init.
         // We delay startNewGame in constructor or handle it here?
@@ -104,34 +129,25 @@ class UI {
     }
 
     handleShare() {
-        // Compact encoding: s|board|hConstraints|vConstraints
-        // s = size, board = all cells concatenated, h/v = row/col constraints
+        // Seed-based URL: just size and seed
         const size = this.game.size;
-        const board = this.game.initialBoard.flat().join('');
-        
-        // Encode constraints: = -> e, x -> x, empty -> 0
-        const encodeConstraints = (arr) => arr.map(row => 
-            row.map(c => c === '=' ? 'e' : c === 'x' ? 'x' : '0').join('')
-        ).join(',');
-        
-        const hStr = encodeConstraints(this.game.constraints.h);
-        const vStr = encodeConstraints(this.game.constraints.v);
-        
-        const compact = `${size}|${board}|${hStr}|${vStr}`;
-        
-        // Convert to base64url (shorter than base64)
-        const base64 = btoa(compact).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        const seed = this.game.seed;
         
         const url = new URL(window.location);
-        url.searchParams.set('l', base64);
+        url.searchParams.set('g', `${size}:${seed}`);
+        const urlString = url.toString();
 
-        navigator.clipboard.writeText(url.toString()).then(() => {
-            this.messageArea.textContent = "Link copied to clipboard!";
-            this.messageArea.className = 'message-area success';
-            setTimeout(() => {
-                this.messageArea.className = 'message-area hidden';
-            }, 3000);
-        });
+        // Try modern clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(urlString).then(() => {
+                this.showShareSuccess();
+            }).catch((err) => {
+                console.error('Clipboard API failed:', err);
+                this.fallbackCopyToClipboard(urlString);
+            });
+        } else {
+            this.fallbackCopyToClipboard(urlString);
+        }
     }
 
     handleKeydown(e) {
@@ -161,8 +177,9 @@ class UI {
                     action = true;
                 }
                 break;
-            case 'Shift': // Moon
-                if (this.game.setCell(this.selected.r, this.selected.c, 2)) {
+            case 'Shift':
+                // Only right shift places moon (location 2 = right)
+                if (e.location === 2 && this.game.setCell(this.selected.r, this.selected.c, 2)) {
                     action = true;
                 }
                 break;
@@ -191,6 +208,7 @@ class UI {
     }
 
     handleMove() {
+        this.moveCount++;
         this.updateBoard();
         const result = this.game.checkWinCondition();
         if (result.won) {
@@ -203,11 +221,19 @@ class UI {
     startNewGame(levelData = null) {
         this.game.startNewGame(levelData);
         this.selected = { r: 0, c: 0 }; // Reset selection
+        this.moveCount = 0;
         this.resetTimer();
         this.startTimer();
         this.initializeBoard();
         this.messageArea.className = 'message-area hidden';
         this.messageArea.textContent = '';
+        this.updateUrlForCurrentPuzzle();
+    }
+
+    updateUrlForCurrentPuzzle() {
+        const url = new URL(window.location);
+        url.searchParams.set('g', `${this.game.size}:${this.game.seed}`);
+        window.history.replaceState({}, '', url);
     }
 
     resetTimer() {
@@ -428,7 +454,230 @@ class UI {
     handleWin() {
         this.stopTimer();
         this.validateAndHighlight(); // Ensure clean
-        this.messageArea.textContent = "Puzzle Solved!";
+        
+        // Save solve to history
+        const solveData = {
+            size: this.game.size,
+            seed: this.game.seed,
+            timeSeconds: this.seconds,
+            moveCount: this.moveCount
+        };
+        this.history.saveSolve(solveData);
+        
+        // Get stats for this puzzle
+        const stats = this.history.getPuzzleStats(this.game.size, this.game.seed);
+        let message = "Puzzle Solved!";
+        
+        if (stats.solveCount > 1) {
+            message += ` (Solve #${stats.solveCount}`;
+            if (this.seconds === stats.bestTime) {
+                message += " - New Best Time!";
+            }
+            message += ")";
+        }
+        
+        this.messageArea.textContent = message;
         this.messageArea.className = 'message-area success';
+    }
+
+    showStats() {
+        const modal = document.getElementById('stats-modal');
+        modal.classList.remove('hidden');
+        this.updateStatsDisplay();
+    }
+
+    hideStats() {
+        const modal = document.getElementById('stats-modal');
+        modal.classList.add('hidden');
+    }
+
+    switchStatsTab(tab) {
+        // Update tab buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+        
+        // Update tab content
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.toggle('active', content.id === `tab-${tab}`);
+        });
+        
+        // Refresh display
+        this.updateStatsDisplay();
+    }
+
+    updateStatsDisplay() {
+        const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
+        
+        if (activeTab === 'overview') {
+            this.updateOverviewTab();
+        } else if (activeTab === 'current') {
+            this.updateCurrentTab();
+        } else if (activeTab === 'history') {
+            this.updateHistoryTab();
+        }
+    }
+
+    updateOverviewTab() {
+        const stats = this.history.getOverallStats();
+        
+        document.getElementById('stat-total-solves').textContent = stats.totalSolves;
+        document.getElementById('stat-total-time').textContent = SolveHistory.formatTime(stats.totalTime);
+        
+        const bySizeContainer = document.getElementById('stats-by-size');
+        if (Object.keys(stats.bySize).length === 0) {
+            bySizeContainer.innerHTML = '<div class="no-history">No puzzles solved yet</div>';
+        } else {
+            bySizeContainer.innerHTML = Object.entries(stats.bySize).map(([size, data]) => `
+                <div class="size-stat">
+                    <span class="size-label">${size}x${size}</span>
+                    <div class="size-details">
+                        <div>${data.count} solved</div>
+                        <div>Best: ${SolveHistory.formatTime(data.bestTime)}</div>
+                        <div>Avg: ${SolveHistory.formatTime(data.averageTime)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+
+    updateCurrentTab() {
+        const stats = this.history.getPuzzleStats(this.game.size, this.game.seed);
+        
+        document.getElementById('current-size').textContent = `${this.game.size}x${this.game.size}`;
+        document.getElementById('current-seed').textContent = this.game.seed;
+        document.getElementById('current-solve-count').textContent = stats.solveCount;
+        document.getElementById('current-best-time').textContent = stats.bestTime ? 
+            SolveHistory.formatTime(stats.bestTime) : '-';
+    }
+
+    updateHistoryTab() {
+        const solves = this.history.getAllSolves();
+        const list = document.getElementById('history-list');
+        
+        if (solves.length === 0) {
+            list.innerHTML = '<div class="no-history">No solve history yet</div>';
+        } else {
+            list.innerHTML = solves.slice(0, 20).map(solve => `
+                <div class="history-item" data-size="${solve.size}" data-seed="${solve.seed}">
+                    <div class="history-info">
+                        <span class="history-puzzle">${solve.size}x${solve.size} • ${solve.seed}</span>
+                        <span class="history-date">${SolveHistory.formatDate(solve.completedAt)}</span>
+                    </div>
+                    <div class="history-actions">
+                        <button class="history-btn share-history-btn" title="Share puzzle" data-size="${solve.size}" data-seed="${solve.seed}">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                        </button>
+                        <button class="history-btn view-history-btn" title="View puzzle" data-size="${solve.size}" data-seed="${solve.seed}">
+                            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="history-stats">
+                        <div class="history-time">${SolveHistory.formatTime(solve.timeSeconds)}</div>
+                        <div>${solve.moveCount} moves</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Attach event listeners to the buttons
+            list.querySelectorAll('.share-history-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const size = parseInt(btn.dataset.size);
+                    const seed = btn.dataset.seed;
+                    this.sharePuzzle(size, seed);
+                });
+            });
+            
+            list.querySelectorAll('.view-history-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const size = parseInt(btn.dataset.size);
+                    const seed = btn.dataset.seed;
+                    this.viewPuzzle(size, seed);
+                });
+            });
+        }
+    }
+
+    sharePuzzle(size, seed) {
+        const url = new URL(window.location.origin + window.location.pathname);
+        url.searchParams.set('g', `${size}:${seed}`);
+        const urlString = url.toString();
+        
+        // Try modern clipboard API first
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(urlString).then(() => {
+                this.showShareSuccess();
+            }).catch((err) => {
+                console.error('Clipboard API failed:', err);
+                // Fallback to textarea method
+                this.fallbackCopyToClipboard(urlString);
+            });
+        } else {
+            // Use fallback for browsers without clipboard API
+            this.fallbackCopyToClipboard(urlString);
+        }
+    }
+
+    fallbackCopyToClipboard(text) {
+        // Create temporary textarea
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.left = '-9999px';
+        textarea.style.top = '0';
+        document.body.appendChild(textarea);
+        
+        try {
+            textarea.focus();
+            textarea.select();
+            textarea.setSelectionRange(0, textarea.value.length);
+            
+            const successful = document.execCommand('copy');
+            if (successful) {
+                this.showShareSuccess();
+            } else {
+                this.showShareError();
+            }
+        } catch (err) {
+            console.error('Fallback copy failed:', err);
+            this.showShareError();
+        } finally {
+            document.body.removeChild(textarea);
+        }
+    }
+
+    showShareSuccess() {
+        this.messageArea.textContent = "Puzzle link copied to clipboard!";
+        this.messageArea.className = 'message-area success';
+        setTimeout(() => {
+            this.messageArea.className = 'message-area hidden';
+        }, 3000);
+    }
+
+    showShareError() {
+        this.messageArea.textContent = "Failed to copy link. Please copy manually.";
+        this.messageArea.className = 'message-area';
+        setTimeout(() => {
+            this.messageArea.className = 'message-area hidden';
+        }, 3000);
+    }
+
+    viewPuzzle(size, seed) {
+        // Hide stats modal
+        this.hideStats();
+        
+        // Load the puzzle
+        this.startNewGame({ size, seed });
     }
 }

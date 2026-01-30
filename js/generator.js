@@ -1,5 +1,5 @@
 class LevelGenerator {
-    constructor() {
+    constructor(seed = null) {
         this.symbols = {
             EQUAL: '=',
             CROSS: 'x',
@@ -10,9 +10,25 @@ class LevelGenerator {
             SUN: 1,
             MOON: 2
         };
+        this.rng = seed !== null ? new SeededRNG(seed) : null;
     }
 
-    generate(size) {
+    setSeed(seed) {
+        this.rng = new SeededRNG(seed);
+    }
+
+    random() {
+        return this.rng ? this.rng.next() : Math.random();
+    }
+
+    generate(size, seed = null) {
+        // Set seed if provided, otherwise clear RNG for random generation
+        if (seed) {
+            this.setSeed(seed);
+        } else {
+            this.rng = null;
+        }
+        
         // 1. Generate a valid full solution
         const solution = this.createEmptyBoard(size);
         if (!this.fillBoard(solution, 0, 0, size)) {
@@ -112,8 +128,14 @@ class LevelGenerator {
         return {
             solution: solution,
             initialBoard: puzzle,
-            constraints: constraints
+            constraints: constraints,
+            seed: this.rng ? this.rng.seed : null
         };
+    }
+
+    generateFromSeed(size, seed) {
+        const result = this.generate(size, seed);
+        return result;
     }
 
     createEmptyBoard(size) {
@@ -126,8 +148,12 @@ class LevelGenerator {
         const nextRow = col === size - 1 ? row + 1 : row;
         const nextCol = col === size - 1 ? 0 : col + 1;
 
-        const pieces = [this.pieces.SUN, this.pieces.MOON];
-        this.shuffle(pieces);
+        // Deterministic piece order based on position (no RNG consumption here)
+        // This ensures backtracking produces the same result every time
+        const pos = row * size + col;
+        const pieces = pos % 2 === 0 
+            ? [this.pieces.SUN, this.pieces.MOON] 
+            : [this.pieces.MOON, this.pieces.SUN];
 
         for (const piece of pieces) {
             if (this.isValidPlacement(board, row, col, size, piece)) {
@@ -276,8 +302,36 @@ class LevelGenerator {
 
     shuffle(array) {
         for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+            const j = Math.floor(this.random() * (i + 1));
             [array[i], array[j]] = [array[j], array[i]];
         }
+    }
+}
+
+// Seeded Random Number Generator (Mulberry32)
+class SeededRNG {
+    constructor(seed) {
+        this.seed = seed;
+        this.state = this.hashSeed(seed);
+    }
+
+    hashSeed(str) {
+        let h = 1779033703 ^ str.length;
+        for (let i = 0; i < str.length; i++) {
+            h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+            h = h << 13 | h >>> 19;
+        }
+        return () => {
+            h = Math.imul(h ^ h >>> 16, 2246822507);
+            h = Math.imul(h ^ h >>> 13, 3266489909);
+            return (h ^= h >>> 16) >>> 0;
+        };
+    }
+
+    next() {
+        let t = this.state();
+        t = Math.imul(t ^ t >>> 15, t | 1);
+        t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
     }
 }

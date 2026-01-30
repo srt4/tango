@@ -7,33 +7,53 @@ class Game {
         this.constraints = { h: [], v: [] };
         this.generator = new LevelGenerator();
         this.history = []; // For undo
+        this.seed = null; // Generation seed
     }
 
     startNewGame(levelData = null) {
         if (levelData) {
-            this.size = levelData.size; // Ensure size matches
-            this.initialBoard = JSON.parse(JSON.stringify(levelData.initialBoard));
-            this.board = JSON.parse(JSON.stringify(levelData.initialBoard));
-            this.constraints = levelData.constraints;
-
-            // We need to solve it to populate this.solution for hints
-            // The generator has a solver, but it modifies the board. 
-            // We can use generator's solveLogically if we expose it or copy.
-            // Actually, we can just assume the generator instance has it.
-            const solverBoard = this.board.map(r => [...r]);
-            this.generator.solveLogically(solverBoard, this.size, this.constraints);
-            this.solution = solverBoard;
+            this.size = levelData.size;
+            
+            // Check if loading from seed
+            if (levelData.seed) {
+                this.seed = levelData.seed;
+                const level = this.generator.generateFromSeed(this.size, this.seed);
+                this.solution = level.solution;
+                this.constraints = level.constraints;
+                this.initialBoard = JSON.parse(JSON.stringify(level.initialBoard));
+                this.board = JSON.parse(JSON.stringify(level.initialBoard));
+            } else {
+                // Legacy: load full board data
+                this.initialBoard = JSON.parse(JSON.stringify(levelData.initialBoard));
+                this.board = JSON.parse(JSON.stringify(levelData.initialBoard));
+                this.constraints = levelData.constraints;
+                this.seed = levelData.seed || null;
+                
+                const solverBoard = this.board.map(r => [...r]);
+                this.generator.solveLogically(solverBoard, this.size, this.constraints);
+                this.solution = solverBoard;
+            }
         } else {
-            const level = this.generator.generate(this.size);
+            // Generate new game with random seed
+            this.seed = this.generateRandomSeed();
+            const level = this.generator.generate(this.size, this.seed);
             this.solution = level.solution;
             this.constraints = level.constraints;
-
-            // Deep copy for initial board
             this.initialBoard = JSON.parse(JSON.stringify(level.initialBoard));
             this.board = JSON.parse(JSON.stringify(level.initialBoard));
         }
 
         this.history = [];
+    }
+
+    generateRandomSeed() {
+        // Generate 8-character alphanumeric seed
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let seed = '';
+        for (let i = 0; i < 8; i++) {
+            seed += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return seed;
     }
 
     getCell(row, col) {
