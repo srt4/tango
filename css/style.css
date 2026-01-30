@@ -223,8 +223,22 @@ main {
         height: 44px;
     }
     
+    /* Smaller cells for 8x8 grid on mobile */
+    .game-board[data-size="8"] .cell {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .game-board[data-size="8"] .cell-wrapper {
+        padding: 4px;
+    }
+    
     .game-board {
         padding: 12px;
+    }
+    
+    .game-board[data-size="8"] {
+        padding: 8px;
     }
     
     .game-controls {
@@ -302,9 +316,9 @@ main {
     height: 50%;
     border-radius: 50%;
     background: transparent;
-    box-shadow: -8px -3px 0 3px var(--moon-color),
-        -8px -3px 12px rgba(66, 165, 245, 0.4);
-    transform: rotate(-20deg) translate(4px, 4px);
+    box-shadow: -6px -2px 0 3px var(--moon-color),
+        -6px -2px 12px rgba(66, 165, 245, 0.4);
+    transform: rotate(-20deg);
 }
 
 /* Symbols */
