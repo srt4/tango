@@ -104,14 +104,26 @@ class UI {
     }
 
     handleShare() {
-        const data = {
-            size: this.game.size,
-            initialBoard: this.game.initialBoard,
-            constraints: this.game.constraints
-        };
-        const str = btoa(JSON.stringify(data));
+        // Compact encoding: s|board|hConstraints|vConstraints
+        // s = size, board = all cells concatenated, h/v = row/col constraints
+        const size = this.game.size;
+        const board = this.game.initialBoard.flat().join('');
+        
+        // Encode constraints: = -> e, x -> x, empty -> 0
+        const encodeConstraints = (arr) => arr.map(row => 
+            row.map(c => c === '=' ? 'e' : c === 'x' ? 'x' : '0').join('')
+        ).join(',');
+        
+        const hStr = encodeConstraints(this.game.constraints.h);
+        const vStr = encodeConstraints(this.game.constraints.v);
+        
+        const compact = `${size}|${board}|${hStr}|${vStr}`;
+        
+        // Convert to base64url (shorter than base64)
+        const base64 = btoa(compact).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        
         const url = new URL(window.location);
-        url.searchParams.set('level', str);
+        url.searchParams.set('l', base64);
 
         navigator.clipboard.writeText(url.toString()).then(() => {
             this.messageArea.textContent = "Link copied to clipboard!";
