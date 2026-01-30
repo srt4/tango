@@ -101,27 +101,6 @@ class UI {
             }
         });
 
-        // Check for shared level on load
-        // This is called once on init.
-        // We delay startNewGame in constructor or handle it here?
-        // best to check params here or in a separate init method.
-        // but the constructor calls startNewGame immediately... 
-        // We really should check params first.
-        // Let's rely on the fact that initEventListeners is called at the end of constructor.
-        // Wait, constructor calls selected initEventListeners, THEN nothing else. 
-        // Code:
-        // this.initEventListeners();
-        // }
-        // So we should do the check in constructor or right after.
-        // Or we can just startNewGame() in constructor, then if param exists, override it immediately?
-        // A bit wasteful but fine.
-
-        // Actually, let's look at constructor. It doesn't call startNewGame?
-        // view_file earlier:
-        // document.getElementById('size-select').addEventListener... this.startNewGame();
-        // It DOES NOT seem to call startNewGame from constructor in the file I viewed?
-        // Wait, let me check the file content again.
-
         // Keyboard support
         document.addEventListener('keydown', (e) => {
             this.handleKeydown(e);

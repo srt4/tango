@@ -210,25 +210,30 @@ main {
 @media (max-width: 500px) {
     .app-container {
         padding: 8px;
+        gap: 4px;
     }
     
     header {
-        margin-bottom: 0.5rem;
+        margin-bottom: 0;
     }
     
     .header-top {
         flex-direction: row;
         gap: 0.5rem;
         align-items: center;
-        margin-bottom: 0.5rem;
+        margin-bottom: 4px;
     }
     
     .logo {
         font-size: 1.2rem;
     }
     
+    .status-bar {
+        margin-bottom: 4px;
+    }
+    
     main {
-        margin-bottom: 0.5rem;
+        margin-bottom: 4px;
     }
     
     .cell {
@@ -247,15 +252,20 @@ main {
     }
     
     .game-board {
-        padding: 12px;
+        padding: 8px;
     }
     
     .game-board[data-size="8"] {
-        padding: 6px;
+        padding: 4px;
+    }
+    
+    footer {
+        margin-top: 4px;
     }
     
     .game-controls {
         gap: 6px;
+        margin: 0;
     }
     
     .control-btn {
@@ -264,12 +274,16 @@ main {
     }
     
     .timer {
-        font-size: 1rem;
-        padding: 4px 10px;
+        font-size: 1.3rem;
+        padding: 6px 12px;
     }
     
     .icon-btn {
         padding: 6px;
+    }
+    
+    .message-area {
+        margin-top: 8px;
     }
 }
 
