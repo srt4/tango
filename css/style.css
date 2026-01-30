@@ -205,17 +205,26 @@ main {
 
 @media (max-width: 500px) {
     .app-container {
-        padding: 12px;
+        padding: 8px;
+    }
+    
+    header {
+        margin-bottom: 0.5rem;
+    }
+    
+    .header-top {
+        flex-direction: row;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 0.5rem;
     }
     
     .logo {
         font-size: 1.2rem;
     }
     
-    .header-top {
-        flex-direction: column;
-        gap: 0.5rem;
-        align-items: flex-start;
+    main {
+        margin-bottom: 0.5rem;
     }
     
     .cell {
@@ -225,12 +234,12 @@ main {
     
     /* Smaller cells for 8x8 grid on mobile */
     .game-board[data-size="8"] .cell {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
     }
     
     .game-board[data-size="8"] .cell-wrapper {
-        padding: 4px;
+        padding: 3px;
     }
     
     .game-board {
@@ -238,25 +247,25 @@ main {
     }
     
     .game-board[data-size="8"] {
-        padding: 8px;
+        padding: 6px;
     }
     
     .game-controls {
-        gap: 8px;
+        gap: 6px;
     }
     
     .control-btn {
-        padding: 10px 16px;
-        font-size: 0.85rem;
+        padding: 8px 12px;
+        font-size: 0.8rem;
     }
     
     .timer {
-        font-size: 1.1rem;
-        padding: 6px 12px;
+        font-size: 1rem;
+        padding: 4px 10px;
     }
     
     .icon-btn {
-        padding: 8px;
+        padding: 6px;
     }
 }
 
@@ -312,13 +321,13 @@ main {
 }
 
 .piece.moon {
-    width: 50%;
-    height: 50%;
+    width: 60%;
+    height: 60%;
     border-radius: 50%;
     background: transparent;
-    box-shadow: -6px -2px 0 3px var(--moon-color),
-        -6px -2px 12px rgba(66, 165, 245, 0.4);
-    transform: rotate(-20deg);
+    box-shadow: -4px 0 0 2px var(--moon-color),
+        -4px 0 8px rgba(66, 165, 245, 0.4);
+    transform: translateX(4px);
 }
 
 /* Symbols */
