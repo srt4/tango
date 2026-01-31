@@ -241,7 +241,7 @@ main {
         height: 44px;
     }
     
-    /* Smaller cells for 8x8 grid on mobile */
+    /* Smaller cells and spacing for larger grids on mobile */
     .game-board[data-size="8"] .cell {
         width: 32px;
         height: 32px;
@@ -251,12 +251,25 @@ main {
         padding: 3px;
     }
     
+    .game-board[data-size="10"] .cell {
+        width: 26px;
+        height: 26px;
+    }
+    
+    .game-board[data-size="10"] .cell-wrapper {
+        padding: 2px;
+    }
+    
     .game-board {
         padding: 8px;
     }
     
     .game-board[data-size="8"] {
         padding: 4px;
+    }
+    
+    .game-board[data-size="10"] {
+        padding: 3px;
     }
     
     footer {
@@ -284,6 +297,28 @@ main {
     
     .message-area {
         margin-top: 8px;
+    }
+    
+    /* Reduce padding for default 6x6 grid on mobile */
+    .game-board[data-size="6"] .cell-wrapper,
+    .game-board:not([data-size]) .cell-wrapper {
+        padding: 4px;
+    }
+}
+
+/* Medium screens - better sizing for 10x10 */
+@media (min-width: 501px) and (max-width: 700px) {
+    .game-board[data-size="10"] .cell {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .game-board[data-size="10"] .cell-wrapper {
+        padding: 4px;
+    }
+    
+    .game-board[data-size="10"] {
+        padding: 6px;
     }
 }
 
