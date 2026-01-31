@@ -1,23 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
     const defaultSize = 6;
-    const game = new Game(defaultSize);
+    const defaultDifficulty = 'medium';
+    
+    // Check URL for difficulty param
+    const urlParams = new URLSearchParams(window.location.search);
+    const difficultyParam = urlParams.get('d');
+    const initialDifficulty = difficultyParam || defaultDifficulty;
+    
+    const game = new Game(defaultSize, initialDifficulty);
     const history = new SolveHistory();
     const ui = new UI(game, history);
 
     // Initial Start
-    const urlParams = new URLSearchParams(window.location.search);
     const gameParam = urlParams.get('g'); // Seed-based format: size:seed
     const legacyParam = urlParams.get('l'); // Old compact format
     const oldLegacyParam = urlParams.get('level'); // Very old JSON format
     let levelData = null;
 
     if (gameParam) {
-        // New seed-based format: ?g=6:abc12345
+        // New seed-based format: ?g=6:abc12345 or ?g=6:abc12345:hard
         try {
-            const [sizeStr, seed] = gameParam.split(':');
+            const parts = gameParam.split(':');
+            const sizeStr = parts[0];
+            const seed = parts[1];
+            const difficulty = parts[2] || difficultyParam || defaultDifficulty;
             levelData = {
                 size: parseInt(sizeStr),
-                seed: seed
+                seed: seed,
+                difficulty: difficulty
             };
         } catch (e) {
             console.error("Failed to parse seed-based level", e);

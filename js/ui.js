@@ -31,6 +31,12 @@ class UI {
             this.startNewGame();
         });
 
+        // Difficulty Select
+        document.getElementById('difficulty-select').addEventListener('change', (e) => {
+            this.game.difficulty = e.target.value;
+            this.startNewGame();
+        });
+
         // Controls
         document.getElementById('new-game-btn').addEventListener('click', () => {
             this.startNewGame();
@@ -110,7 +116,8 @@ class UI {
     handleShare() {
         const size = this.game.size;
         const seed = this.game.seed;
-        const url = `${window.location.origin}${window.location.pathname}?g=${size}:${seed}`;
+        const difficulty = this.game.difficulty;
+        const url = `${window.location.origin}${window.location.pathname}?g=${size}:${seed}:${difficulty}`;
         
         navigator.clipboard.writeText(url).then(() => {
             this.showToast('Link copied to clipboard!');
@@ -216,12 +223,15 @@ class UI {
         this.initializeBoard();
         this.messageArea.className = 'message-area hidden';
         this.messageArea.textContent = '';
+        // Sync UI controls with game state
+        document.getElementById('size-select').value = this.game.size;
+        document.getElementById('difficulty-select').value = this.game.difficulty;
         this.updateUrlForCurrentPuzzle();
     }
 
     updateUrlForCurrentPuzzle() {
         const url = new URL(window.location);
-        url.searchParams.set('g', `${this.game.size}:${this.game.seed}`);
+        url.searchParams.set('g', `${this.game.size}:${this.game.seed}:${this.game.difficulty}`);
         window.history.replaceState({}, '', url);
     }
 
@@ -448,6 +458,7 @@ class UI {
         const solveData = {
             size: this.game.size,
             seed: this.game.seed,
+            difficulty: this.game.difficulty,
             timeSeconds: this.seconds,
             moveCount: this.moveCount
         };
@@ -554,7 +565,7 @@ class UI {
                         <span class="history-date">${SolveHistory.formatDate(solve.completedAt)}</span>
                     </div>
                     <div class="history-actions">
-                        <button class="history-btn share-history-btn" title="Share puzzle" data-size="${solve.size}" data-seed="${solve.seed}">
+                        <button class="history-btn share-history-btn" title="Share puzzle" data-size="${solve.size}" data-seed="${solve.seed}" data-difficulty="${solve.difficulty || 'medium'}">
                             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="18" cy="5" r="3"></circle>
                                 <circle cx="6" cy="12" r="3"></circle>
@@ -583,7 +594,8 @@ class UI {
                     e.stopPropagation();
                     const size = parseInt(btn.dataset.size);
                     const seed = btn.dataset.seed;
-                    this.sharePuzzle(size, seed);
+                    const difficulty = btn.dataset.difficulty || 'medium';
+                    this.sharePuzzle(size, seed, difficulty);
                 });
             });
             
@@ -598,8 +610,8 @@ class UI {
         }
     }
 
-    sharePuzzle(size, seed) {
-        const url = `${window.location.origin}${window.location.pathname}?g=${size}:${seed}`;
+    sharePuzzle(size, seed, difficulty = 'medium') {
+        const url = `${window.location.origin}${window.location.pathname}?g=${size}:${seed}:${difficulty}`;
         
         navigator.clipboard.writeText(url).then(() => {
             this.showToast('Link copied to clipboard!');

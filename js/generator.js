@@ -21,13 +21,21 @@ class LevelGenerator {
         return this.rng ? this.rng.next() : Math.random();
     }
 
-    generate(size, seed = null) {
+    generate(size, seed = null, difficulty = 'medium') {
         // Set seed if provided, otherwise clear RNG for random generation
         if (seed) {
             this.setSeed(seed);
         } else {
             this.rng = null;
         }
+        
+        // Difficulty settings: target percentages of constraints/cells to keep
+        const difficultySettings = {
+            easy: { constraintsKeep: 0.7, cellsKeep: 0.5 },
+            medium: { constraintsKeep: 0.4, cellsKeep: 0.25 },
+            hard: { constraintsKeep: 0.15, cellsKeep: 0.1 }
+        };
+        const settings = difficultySettings[difficulty] || difficultySettings.medium;
         
         // 1. Generate a valid full solution
         const solution = this.createEmptyBoard(size);
@@ -38,12 +46,14 @@ class LevelGenerator {
 
         // 2. Start with Maximum Constraints (All matching symbols)
         const constraints = { h: [], v: [] };
+        let totalConstraints = 0;
         // Horizontal
         for (let r = 0; r < size; r++) {
             const row = [];
             for (let c = 0; c < size - 1; c++) {
                 if (solution[r][c] === solution[r][c + 1]) row.push(this.symbols.EQUAL);
                 else row.push(this.symbols.CROSS);
+                totalConstraints++;
             }
             constraints.h.push(row);
         }
@@ -53,6 +63,7 @@ class LevelGenerator {
             for (let c = 0; c < size; c++) {
                 if (solution[r][c] === solution[r + 1][c]) row.push(this.symbols.EQUAL);
                 else row.push(this.symbols.CROSS);
+                totalConstraints++;
             }
             constraints.v.push(row);
         }
@@ -93,17 +104,23 @@ class LevelGenerator {
         }
         this.shuffle(cells);
 
-        const reductionQueue = [...items, ...cells];
-        // Shuffle everything together to ensure a natural mix of constraints and pieces
-        this.shuffle(reductionQueue);
+        // Calculate targets for difficulty levels
+        const targetConstraints = Math.ceil(totalConstraints * settings.constraintsKeep);
+        const targetCells = Math.ceil(size * size * settings.cellsKeep);
 
-        // 5. Reduction Loop
-        for (const item of reductionQueue) {
+        // Track current counts
+        let currentConstraints = totalConstraints;
+        let currentCells = size * size;
+
+        // 5. Reduction Loop - First pass: Remove constraints
+        for (const item of items) {
+            // Early stopping: check if we've reached the target for constraints
+            if (currentConstraints <= targetConstraints) {
+                break;
+            }
+
             let originalValue;
-            if (item.type === 'cell') {
-                originalValue = puzzle[item.r][item.c];
-                puzzle[item.r][item.c] = 0;
-            } else if (item.type === 'h') {
+            if (item.type === 'h') {
                 originalValue = constraints.h[item.r][item.c];
                 constraints.h[item.r][item.c] = this.symbols.NONE;
             } else if (item.type === 'v') {
@@ -114,14 +131,34 @@ class LevelGenerator {
             const solverBoard = puzzle.map(row => [...row]);
             const solvable = this.solveLogically(solverBoard, size, constraints);
 
-            if (!solvable) {
-                if (item.type === 'cell') {
-                    puzzle[item.r][item.c] = originalValue;
-                } else if (item.type === 'h') {
+            if (solvable) {
+                currentConstraints--;
+            } else {
+                if (item.type === 'h') {
                     constraints.h[item.r][item.c] = originalValue;
                 } else if (item.type === 'v') {
                     constraints.v[item.r][item.c] = originalValue;
                 }
+            }
+        }
+
+        // 6. Reduction Loop - Second pass: Remove cells
+        for (const item of cells) {
+            // Early stopping: check if we've reached the target for cells
+            if (currentCells <= targetCells) {
+                break;
+            }
+
+            const originalValue = puzzle[item.r][item.c];
+            puzzle[item.r][item.c] = 0;
+
+            const solverBoard = puzzle.map(row => [...row]);
+            const solvable = this.solveLogically(solverBoard, size, constraints);
+
+            if (solvable) {
+                currentCells--;
+            } else {
+                puzzle[item.r][item.c] = originalValue;
             }
         }
 
@@ -150,8 +187,8 @@ class LevelGenerator {
         };
     }
 
-    generateFromSeed(size, seed) {
-        const result = this.generate(size, seed);
+    generateFromSeed(size, seed, difficulty = 'medium') {
+        const result = this.generate(size, seed, difficulty);
         return result;
     }
 

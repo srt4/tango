@@ -1,6 +1,7 @@
 class Game {
-    constructor(size) {
+    constructor(size, difficulty = 'medium') {
         this.size = size;
+        this.difficulty = difficulty;
         this.board = []; // Current state
         this.initialBoard = []; // Starting state (immutable)
         this.solution = []; // Solution (for hints/debugging)
@@ -13,11 +14,15 @@ class Game {
     startNewGame(levelData = null) {
         if (levelData) {
             this.size = levelData.size;
+            // Use provided difficulty or fall back to current
+            if (levelData.difficulty) {
+                this.difficulty = levelData.difficulty;
+            }
             
             // Check if loading from seed
             if (levelData.seed) {
                 this.seed = levelData.seed;
-                const level = this.generator.generateFromSeed(this.size, this.seed);
+                const level = this.generator.generateFromSeed(this.size, this.seed, this.difficulty);
                 this.solution = level.solution;
                 this.constraints = level.constraints;
                 this.initialBoard = JSON.parse(JSON.stringify(level.initialBoard));
@@ -36,7 +41,7 @@ class Game {
         } else {
             // Generate new game with random seed
             this.seed = this.generateRandomSeed();
-            const level = this.generator.generate(this.size, this.seed);
+            const level = this.generator.generate(this.size, this.seed, this.difficulty);
             this.solution = level.solution;
             this.constraints = level.constraints;
             this.initialBoard = JSON.parse(JSON.stringify(level.initialBoard));
