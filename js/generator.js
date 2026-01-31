@@ -125,6 +125,23 @@ class LevelGenerator {
             }
         }
 
+        // Final validation: ensure no duplicate rows in solution
+        for (let r1 = 0; r1 < size; r1++) {
+            for (let r2 = r1 + 1; r2 < size; r2++) {
+                let isDuplicate = true;
+                for (let c = 0; c < size; c++) {
+                    if (solution[r1][c] !== solution[r2][c]) {
+                        isDuplicate = false;
+                        break;
+                    }
+                }
+                if (isDuplicate) {
+                    console.error(`Generated puzzle has duplicate rows: ${r1} and ${r2}`);
+                    return null;
+                }
+            }
+        }
+
         return {
             solution: solution,
             initialBoard: puzzle,
@@ -184,6 +201,25 @@ class LevelGenerator {
             if (board[r][col] === piece) colCount++;
         }
         if (colCount >= size / 2) return false;
+
+        // Check if completing this row would create a duplicate row
+        if (col === size - 1) {
+            // This is the last column, so the row will be complete after placing
+            const currentRow = [...board[row]];
+            currentRow[col] = piece;
+            
+            // Check against all previous completed rows
+            for (let r = 0; r < row; r++) {
+                let isDuplicate = true;
+                for (let c = 0; c < size; c++) {
+                    if (board[r][c] !== currentRow[c]) {
+                        isDuplicate = false;
+                        break;
+                    }
+                }
+                if (isDuplicate) return false;
+            }
+        }
 
         return true;
     }
