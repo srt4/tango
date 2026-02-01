@@ -252,12 +252,12 @@ main {
     }
     
     .game-board[data-size="10"] .cell {
-        width: 26px;
-        height: 26px;
+        width: 32px;
+        height: 32px;
     }
     
     .game-board[data-size="10"] .cell-wrapper {
-        padding: 2px;
+        padding: 1px;
     }
     
     .game-board {
@@ -269,7 +269,7 @@ main {
     }
     
     .game-board[data-size="10"] {
-        padding: 3px;
+        padding: 1px;
     }
     
     footer {
