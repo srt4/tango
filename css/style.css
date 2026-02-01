@@ -243,17 +243,17 @@ main {
     
     /* Minimal padding for larger grids on mobile - maximize cell size */
     .game-board[data-size="8"] .cell {
-        width: 34px;
-        height: 34px;
+        width: 36px;
+        height: 36px;
     }
     
     .game-board[data-size="8"] .cell-wrapper {
-        padding: 1px;
+        padding: 0px;
     }
     
     .game-board[data-size="10"] .cell {
-        width: 34px;
-        height: 34px;
+        width: 36px;
+        height: 36px;
     }
     
     .game-board[data-size="10"] .cell-wrapper {
@@ -261,11 +261,11 @@ main {
     }
     
     .game-board {
-        padding: 8px;
+        padding: 2px;
     }
     
     .game-board[data-size="8"] {
-        padding: 2px;
+        padding: 1px;
     }
     
     .game-board[data-size="10"] {
@@ -273,36 +273,44 @@ main {
     }
     
     footer {
-        margin-top: 4px;
+        margin-top: 2px;
     }
     
     .game-controls {
-        gap: 6px;
+        gap: 4px;
         margin: 0;
     }
     
     .control-btn {
-        padding: 8px 12px;
-        font-size: 0.8rem;
+        padding: 6px 10px;
+        font-size: 0.75rem;
     }
     
     .timer {
-        font-size: 1.3rem;
-        padding: 6px 12px;
+        font-size: 1.2rem;
+        padding: 4px 8px;
     }
     
     .icon-btn {
-        padding: 6px;
+        padding: 4px;
     }
     
     .message-area {
-        margin-top: 8px;
+        margin-top: 4px;
     }
     
-    /* Reduce padding for default 6x6 grid on mobile */
+    /* Minimal padding for all grids on narrow screens */
     .game-board[data-size="6"] .cell-wrapper,
     .game-board:not([data-size]) .cell-wrapper {
-        padding: 4px;
+        padding: 1px;
+    }
+    
+    .game-board[data-size="8"] .cell-wrapper {
+        padding: 0px;
+    }
+    
+    .game-board[data-size="10"] .cell-wrapper {
+        padding: 0px;
     }
 }
 
