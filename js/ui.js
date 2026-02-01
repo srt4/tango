@@ -265,7 +265,7 @@ class UI {
             for (let c = 0; c < size; c++) {
                 const cellWrapper = document.createElement('div');
                 cellWrapper.className = 'cell-wrapper';
-                cellWrapper.style.padding = '8px';
+                // Padding is controlled by CSS (responsive based on screen size)
 
                 const cell = document.createElement('div');
                 cell.className = 'cell';
