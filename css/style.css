@@ -295,25 +295,39 @@ main {
         padding: 2px;
     }
     
-    /* Mobile: Symbols appear above/below cells instead of between */
+    /* Mobile: Allow symbols to overflow cells so they're visible */
+    .cell {
+        overflow: visible;
+    }
+    
+    /* Mobile: Symbols appear above/below cells with high z-index */
+    .h-symbol,
+    .v-symbol {
+        z-index: 100;
+        background: var(--board-bg);
+        border-radius: 4px;
+        padding: 2px 4px;
+        box-shadow: var(--shadow-sm);
+    }
+    
     .h-symbol {
         right: 50%;
-        top: -8px;
+        top: -10px;
         transform: translateX(50%);
-        width: 16px;
-        font-size: 0.9rem;
+        width: auto;
+        font-size: 0.85rem;
     }
     
     .v-symbol {
-        bottom: -8px;
+        bottom: -10px;
         left: 50%;
         transform: translateX(-50%);
-        height: 16px;
-        font-size: 0.9rem;
+        height: auto;
+        font-size: 0.85rem;
     }
     
     .symbol-cross::after {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
 }
 
