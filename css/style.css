@@ -241,23 +241,23 @@ main {
         height: 44px;
     }
     
-    /* Smaller cells and spacing for larger grids on mobile */
+    /* Minimal padding for larger grids on mobile - maximize cell size */
     .game-board[data-size="8"] .cell {
-        width: 32px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
     }
     
     .game-board[data-size="8"] .cell-wrapper {
-        padding: 3px;
+        padding: 1px;
     }
     
     .game-board[data-size="10"] .cell {
-        width: 32px;
-        height: 32px;
+        width: 34px;
+        height: 34px;
     }
     
     .game-board[data-size="10"] .cell-wrapper {
-        padding: 1px;
+        padding: 0px;
     }
     
     .game-board {
@@ -265,11 +265,11 @@ main {
     }
     
     .game-board[data-size="8"] {
-        padding: 4px;
+        padding: 2px;
     }
     
     .game-board[data-size="10"] {
-        padding: 1px;
+        padding: 0px;
     }
     
     footer {
