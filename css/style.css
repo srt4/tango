@@ -174,6 +174,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 8px;
 }
 
 .cell {
@@ -241,73 +242,73 @@ main {
         height: 44px;
     }
     
-    /* Larger cells since padding is now zero */
+    /* Larger cells with minimal padding */
     .game-board[data-size="8"] .cell {
-        width: 38px;
-        height: 38px;
+        width: 40px;
+        height: 40px;
     }
     
     .game-board[data-size="10"] .cell {
-        width: 38px;
-        height: 38px;
+        width: 40px;
+        height: 40px;
     }
     
     .game-board,
     .game-board[data-size="6"],
     .game-board[data-size="8"],
     .game-board[data-size="10"] {
-        padding: 0px;
+        padding: 2px;
     }
     
     footer {
-        margin-top: 0px;
+        margin-top: 2px;
     }
     
     .game-controls {
-        gap: 2px;
+        gap: 4px;
         margin: 0;
     }
     
     .control-btn {
-        padding: 4px 8px;
-        font-size: 0.7rem;
+        padding: 6px 10px;
+        font-size: 0.75rem;
     }
     
     .timer {
-        font-size: 1.1rem;
-        padding: 2px 6px;
+        font-size: 1.2rem;
+        padding: 4px 8px;
     }
     
     .icon-btn {
-        padding: 2px;
+        padding: 4px;
     }
     
     .message-area {
-        margin-top: 2px;
+        margin-top: 4px;
     }
     
-    /* NO PADDING for all grids on narrow screens */
+    /* Minimal padding for all grids on narrow screens */
     .game-board .cell-wrapper,
     .game-board[data-size="6"] .cell-wrapper,
     .game-board[data-size="8"] .cell-wrapper,
     .game-board[data-size="10"] .cell-wrapper {
-        padding: 0px;
+        padding: 2px;
     }
 }
 
-/* Medium screens - minimal padding for 10x10 */
+/* Medium screens - reduced but not zero padding */
 @media (min-width: 501px) and (max-width: 700px) {
     .game-board[data-size="10"] .cell {
-        width: 36px;
-        height: 36px;
+        width: 40px;
+        height: 40px;
     }
     
     .game-board[data-size="10"] .cell-wrapper {
-        padding: 1px;
+        padding: 4px;
     }
     
     .game-board[data-size="10"] {
-        padding: 2px;
+        padding: 6px;
     }
 }
 
