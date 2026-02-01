@@ -295,15 +295,16 @@ main {
         padding: 2px;
     }
     
-    /* Mobile: Allow symbols to overflow cells so they're visible */
+    /* Mobile: Allow symbols to overflow cells and lower cell z-index */
     .cell {
         overflow: visible;
+        z-index: 1;
     }
     
-    /* Mobile: Symbols appear above/below cells with high z-index */
+    /* Mobile: Symbols appear above/below cells with higher z-index */
     .h-symbol,
     .v-symbol {
-        z-index: 100;
+        z-index: 50;
         background: var(--board-bg);
         border-radius: 4px;
         padding: 2px 4px;
