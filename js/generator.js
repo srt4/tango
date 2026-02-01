@@ -31,6 +31,7 @@ class LevelGenerator {
         
         // Difficulty settings: target percentages of constraints/cells to keep
         const difficultySettings = {
+            easy: { constraintsKeep: 0.8, cellsKeep: 0.6 },
             medium: { constraintsKeep: 0.06, cellsKeep: 0.03 },
             hard: { constraintsKeep: 0.03, cellsKeep: 0.015 },
             expert: { constraintsKeep: 0.01, cellsKeep: 0.005 }
