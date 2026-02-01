@@ -210,8 +210,8 @@ main {
 
 @media (max-width: 500px) {
     .app-container {
-        padding: 8px;
-        gap: 4px;
+        padding: 4px;
+        gap: 0px;
     }
     
     header {
@@ -222,19 +222,19 @@ main {
         flex-direction: row;
         gap: 0.5rem;
         align-items: center;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
     
     .logo {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
     
     .status-bar {
-        margin-bottom: 4px;
+        margin-bottom: 0px;
     }
     
     main {
-        margin-bottom: 4px;
+        margin-bottom: 2px;
     }
     
     .cell {
@@ -242,15 +242,15 @@ main {
         height: 44px;
     }
     
-    /* Larger cells with minimal padding */
+    /* 8x8 and 10x10 cells - smaller for mobile */
     .game-board[data-size="8"] .cell {
-        width: 40px;
-        height: 40px;
+        width: 36px;
+        height: 36px;
     }
     
     .game-board[data-size="10"] .cell {
-        width: 40px;
-        height: 40px;
+        width: 34px;
+        height: 34px;
     }
     
     .game-board,
@@ -261,30 +261,30 @@ main {
     }
     
     footer {
-        margin-top: 2px;
+        margin-top: 0px;
     }
     
     .game-controls {
-        gap: 4px;
+        gap: 2px;
         margin: 0;
     }
     
     .control-btn {
-        padding: 6px 10px;
-        font-size: 0.75rem;
+        padding: 4px 8px;
+        font-size: 0.7rem;
     }
     
     .timer {
-        font-size: 1.2rem;
-        padding: 4px 8px;
+        font-size: 1.1rem;
+        padding: 2px 6px;
     }
     
     .icon-btn {
-        padding: 4px;
+        padding: 2px;
     }
     
     .message-area {
-        margin-top: 4px;
+        margin-top: 2px;
     }
     
     /* Minimal padding for all grids on narrow screens */
