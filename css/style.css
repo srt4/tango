@@ -294,6 +294,27 @@ main {
     .game-board[data-size="10"] .cell-wrapper {
         padding: 2px;
     }
+    
+    /* Mobile: Symbols appear above/below cells instead of between */
+    .h-symbol {
+        right: 50%;
+        top: -8px;
+        transform: translateX(50%);
+        width: 16px;
+        font-size: 0.9rem;
+    }
+    
+    .v-symbol {
+        bottom: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        height: 16px;
+        font-size: 0.9rem;
+    }
+    
+    .symbol-cross::after {
+        font-size: 1.1rem;
+    }
 }
 
 /* Medium screens - reduced but not zero padding */
