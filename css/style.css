@@ -306,7 +306,7 @@ main {
     }
 }
 
-/* Medium screens - better sizing for 10x10 */
+/* Medium screens - minimal padding for 10x10 */
 @media (min-width: 501px) and (max-width: 700px) {
     .game-board[data-size="10"] .cell {
         width: 36px;
@@ -314,11 +314,11 @@ main {
     }
     
     .game-board[data-size="10"] .cell-wrapper {
-        padding: 4px;
+        padding: 1px;
     }
     
     .game-board[data-size="10"] {
-        padding: 6px;
+        padding: 2px;
     }
 }
 
