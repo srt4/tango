@@ -242,22 +242,25 @@ main {
         height: 44px;
     }
     
-    /* 8x8 and 10x10 cells - smaller for mobile */
+    /* 8x8 and 10x10 cells - smaller for mobile to prevent scrolling */
     .game-board[data-size="8"] .cell {
-        width: 36px;
-        height: 36px;
+        width: 32px;
+        height: 32px;
     }
     
     .game-board[data-size="10"] .cell {
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
     }
     
     .game-board,
     .game-board[data-size="6"],
-    .game-board[data-size="8"],
-    .game-board[data-size="10"] {
+    .game-board[data-size="8"] {
         padding: 2px;
+    }
+    
+    .game-board[data-size="10"] {
+        padding: 0px;
     }
     
     footer {
@@ -267,20 +270,25 @@ main {
     .game-controls {
         gap: 2px;
         margin: 0;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     
     .control-btn {
-        padding: 4px 8px;
-        font-size: 0.7rem;
+        padding: 3px 6px;
+        font-size: 0.65rem;
+        min-height: 28px;
     }
     
     .timer {
-        font-size: 1.1rem;
-        padding: 2px 6px;
+        font-size: 1rem;
+        padding: 2px 4px;
     }
     
     .icon-btn {
         padding: 2px;
+        min-height: 28px;
+        min-width: 28px;
     }
     
     .message-area {
@@ -290,9 +298,13 @@ main {
     /* Minimal padding for all grids on narrow screens */
     .game-board .cell-wrapper,
     .game-board[data-size="6"] .cell-wrapper,
-    .game-board[data-size="8"] .cell-wrapper,
-    .game-board[data-size="10"] .cell-wrapper {
+    .game-board[data-size="8"] .cell-wrapper {
         padding: 2px;
+    }
+    
+    /* Zero padding for 10x10 to fit on screen */
+    .game-board[data-size="10"] .cell-wrapper {
+        padding: 0px;
     }
     
     /* Mobile: Allow symbols to overflow cells and lower cell z-index */
@@ -359,20 +371,25 @@ main {
     .game-controls {
         gap: 2px;
         margin: 0;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     
     .control-btn {
-        padding: 4px 8px;
-        font-size: 0.7rem;
+        padding: 3px 6px;
+        font-size: 0.65rem;
+        min-height: 28px;
     }
     
     .timer {
-        font-size: 1.1rem;
-        padding: 2px 6px;
+        font-size: 1rem;
+        padding: 2px 4px;
     }
     
     .icon-btn {
         padding: 2px;
+        min-height: 28px;
+        min-width: 28px;
     }
     
     .message-area {
