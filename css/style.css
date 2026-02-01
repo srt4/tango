@@ -320,9 +320,63 @@ main {
         transform: translateX(-50%);
         height: auto;
     }
+}
+
+/* Short viewport - apply mobile styles (75% of typical phone height) */
+@media (max-height: 700px) and (min-width: 501px) {
+    .app-container {
+        padding: 4px;
+        gap: 0px;
+    }
     
-    .symbol-cross::after {
-        font-size: 1rem;
+    header {
+        margin-bottom: 0;
+    }
+    
+    .header-top {
+        flex-direction: row;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 2px;
+    }
+    
+    .logo {
+        font-size: 1.1rem;
+    }
+    
+    .status-bar {
+        margin-bottom: 0px;
+    }
+    
+    main {
+        margin-bottom: 2px;
+    }
+    
+    footer {
+        margin-top: 0px;
+    }
+    
+    .game-controls {
+        gap: 2px;
+        margin: 0;
+    }
+    
+    .control-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .timer {
+        font-size: 1.1rem;
+        padding: 2px 6px;
+    }
+    
+    .icon-btn {
+        padding: 2px;
+    }
+    
+    .message-area {
+        margin-top: 2px;
     }
 }
 
