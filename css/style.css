@@ -301,30 +301,24 @@ main {
         z-index: 1;
     }
     
-    /* Mobile: Symbols appear above/below cells with higher z-index */
+    /* Mobile: Just the symbols, no background box */
     .h-symbol,
     .v-symbol {
         z-index: 50;
-        background: var(--board-bg);
-        border-radius: 4px;
-        padding: 2px 4px;
-        box-shadow: var(--shadow-sm);
     }
     
     .h-symbol {
         right: 50%;
-        top: -10px;
+        top: -8px;
         transform: translateX(50%);
         width: auto;
-        font-size: 0.85rem;
     }
     
     .v-symbol {
-        bottom: -10px;
+        bottom: -8px;
         left: 50%;
         transform: translateX(-50%);
         height: auto;
-        font-size: 0.85rem;
     }
     
     .symbol-cross::after {
