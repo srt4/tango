@@ -210,8 +210,10 @@ main {
 
 @media (max-width: 500px) {
     .app-container {
-        padding: 4px;
+        padding: 2px;
         gap: 0px;
+        width: 100%;
+        max-width: 100%;
     }
     
     header {
@@ -235,22 +237,35 @@ main {
     
     main {
         margin-bottom: 2px;
+        width: 100%;
     }
     
+    /* Grid takes full width on mobile with dynamic cell sizing */
+    .game-board {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    /* Dynamic cell sizing based on viewport width */
     .cell {
-        width: 44px;
-        height: 44px;
+        width: calc((100vw - 16px) / 6);
+        height: calc((100vw - 16px) / 6);
+        max-width: 60px;
+        max-height: 60px;
     }
     
-    /* 8x8 and 10x10 cells - smaller for mobile to prevent scrolling */
     .game-board[data-size="8"] .cell {
-        width: 32px;
-        height: 32px;
+        width: calc((100vw - 16px) / 8);
+        height: calc((100vw - 16px) / 8);
+        max-width: 48px;
+        max-height: 48px;
     }
     
     .game-board[data-size="10"] .cell {
-        width: 26px;
-        height: 26px;
+        width: calc((100vw - 12px) / 10);
+        height: calc((100vw - 12px) / 10);
+        max-width: 40px;
+        max-height: 40px;
     }
     
     .game-board,
@@ -260,11 +275,12 @@ main {
     }
     
     .game-board[data-size="10"] {
-        padding: 0px;
+        padding: 1px;
     }
     
     footer {
-        margin-top: 0px;
+        margin-top: 8px;
+        margin-bottom: 16px;
     }
     
     .game-controls {
