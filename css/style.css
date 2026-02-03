@@ -49,13 +49,17 @@ body {
     color: var(--text-color);
     display: flex;
     justify-content: center;
-    min-height: 100vh;
+    height: 100dvh;
+    /* Use dynamic viewport height */
+    overflow: hidden;
+    /* Prevent scrolling on body */
     transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 .app-container {
     width: 100%;
     max-width: 600px;
+    height: 100%;
     padding: 24px;
     display: flex;
     flex-direction: column;
@@ -151,7 +155,12 @@ main {
     align-items: center;
     justify-content: center;
     width: 100%;
-    margin-bottom: 2rem;
+    min-height: 0;
+    /* Allow shrinking */
+    overflow: hidden;
+    /* Prevent overflow */
+    margin-bottom: 0;
+    padding: 10px 0;
 }
 
 .game-board {
@@ -216,12 +225,12 @@ main {
         max-width: 100%;
         min-height: auto;
     }
-    
+
     header {
         margin-bottom: 0;
         padding: 0;
     }
-    
+
     .header-top {
         flex-direction: row;
         gap: 0.25rem;
@@ -229,45 +238,51 @@ main {
         margin-bottom: 0px;
         padding: 2px 0;
     }
-    
+
     .logo {
         font-size: 1rem;
     }
-    
+
     .status-bar {
         margin-bottom: 0px;
         padding: 0;
     }
-    
+
     main {
         margin-bottom: 0px;
         width: 100%;
         padding: 0;
     }
-    
-    /* Grid takes full width on mobile with dynamic cell sizing */
+
+    /* Grid takes full width on mobile but respects height */
     .game-board {
-        width: 100%;
+        width: auto;
+        height: auto;
         max-width: 100%;
+        max-height: 100%;
         margin: 0;
+        aspect-ratio: 1/1;
     }
-    
-    /* Dynamic cell sizing based on viewport width - maximize space */
+
+    /* Responsive cell sizing */
     .cell {
-        width: calc((100vw - 8px) / 6);
-        height: calc((100vw - 8px) / 6);
+        width: auto;
+        /* Let grid handle width */
+        height: auto;
+        /* Let grid handle height */
+        aspect-ratio: 1/1;
     }
-    
+
     .game-board[data-size="8"] .cell {
-        width: calc((100vw - 8px) / 8);
-        height: calc((100vw - 8px) / 8);
+        width: auto;
+        height: auto;
     }
-    
+
     .game-board[data-size="10"] .cell {
-        width: calc((100vw - 8px) / 10);
-        height: calc((100vw - 8px) / 10);
+        width: auto;
+        height: auto;
     }
-    
+
     .game-board,
     .game-board[data-size="6"],
     .game-board[data-size="8"],
@@ -275,72 +290,72 @@ main {
         padding: 1px;
         gap: 0;
     }
-    
+
     footer {
         margin-top: 4px;
         margin-bottom: 0px;
         padding: 0;
     }
-    
+
     .game-controls {
         gap: 2px;
         margin: 0;
         flex-wrap: wrap;
         justify-content: center;
     }
-    
+
     .control-btn {
         padding: 3px 6px;
         font-size: 0.65rem;
         min-height: 28px;
     }
-    
+
     .timer {
         font-size: 1rem;
         padding: 2px 4px;
     }
-    
+
     .icon-btn {
         padding: 2px;
         min-height: 28px;
         min-width: 28px;
     }
-    
+
     .message-area {
         margin-top: 2px;
     }
-    
+
     /* Minimal padding for all grids on narrow screens */
     .game-board .cell-wrapper,
     .game-board[data-size="6"] .cell-wrapper,
     .game-board[data-size="8"] .cell-wrapper {
         padding: 2px;
     }
-    
+
     /* Zero padding for 10x10 to fit on screen */
     .game-board[data-size="10"] .cell-wrapper {
         padding: 0px;
     }
-    
+
     /* Mobile: Allow symbols to overflow cells and lower cell z-index */
     .cell {
         overflow: visible;
         z-index: 1;
     }
-    
+
     /* Mobile: Just the symbols, no background box */
     .h-symbol,
     .v-symbol {
         z-index: 50;
     }
-    
+
     .h-symbol {
         right: 50%;
         top: -8px;
         transform: translateX(50%);
         width: auto;
     }
-    
+
     .v-symbol {
         bottom: -8px;
         left: 50%;
@@ -355,58 +370,58 @@ main {
         padding: 4px;
         gap: 0px;
     }
-    
+
     header {
         margin-bottom: 0;
     }
-    
+
     .header-top {
         flex-direction: row;
         gap: 0.5rem;
         align-items: center;
         margin-bottom: 2px;
     }
-    
+
     .logo {
         font-size: 1.1rem;
     }
-    
+
     .status-bar {
         margin-bottom: 0px;
     }
-    
+
     main {
         margin-bottom: 2px;
     }
-    
+
     footer {
         margin-top: 0px;
     }
-    
+
     .game-controls {
         gap: 2px;
         margin: 0;
         flex-wrap: wrap;
         justify-content: center;
     }
-    
+
     .control-btn {
         padding: 3px 6px;
         font-size: 0.65rem;
         min-height: 28px;
     }
-    
+
     .timer {
         font-size: 1rem;
         padding: 2px 4px;
     }
-    
+
     .icon-btn {
         padding: 2px;
         min-height: 28px;
         min-width: 28px;
     }
-    
+
     .message-area {
         margin-top: 2px;
     }
@@ -418,11 +433,11 @@ main {
         width: 40px;
         height: 40px;
     }
-    
+
     .game-board[data-size="10"] .cell-wrapper {
         padding: 4px;
     }
-    
+
     .game-board[data-size="10"] {
         padding: 6px;
     }
@@ -598,8 +613,7 @@ footer {
     box-shadow: var(--shadow-sm);
 }
 
-.dark-mode .control-btn::after {
-}
+
 
 .control-btn.primary {
     background: var(--primary-btn-bg);
@@ -944,11 +958,11 @@ footer {
     .stats-content {
         max-height: 90vh;
     }
-    
+
     .stats-body {
         padding: 16px;
     }
-    
+
     .stat-value {
         font-size: 1.5rem;
     }

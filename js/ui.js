@@ -118,7 +118,7 @@ class UI {
         const seed = this.game.seed;
         const difficulty = this.game.difficulty;
         const url = `${window.location.origin}${window.location.pathname}?g=${size}:${seed}:${difficulty}`;
-        
+
         navigator.clipboard.writeText(url).then(() => {
             this.showToast('Link copied to clipboard!');
         });
@@ -128,17 +128,17 @@ class UI {
         // Remove any existing toast
         const existing = document.querySelector('.toast-notification');
         if (existing) existing.remove();
-        
+
         const toast = document.createElement('div');
         toast.className = 'toast-notification';
         toast.textContent = message;
         document.body.appendChild(toast);
-        
+
         // Trigger animation
         requestAnimationFrame(() => {
             toast.classList.add('show');
         });
-        
+
         // Remove after delay
         setTimeout(() => {
             toast.classList.remove('show');
@@ -258,7 +258,7 @@ class UI {
         this.boardElement.innerHTML = '';
         const size = this.game.size;
 
-        this.boardElement.style.gridTemplateColumns = `repeat(${size}, auto)`;
+        this.boardElement.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
         this.boardElement.dataset.size = size;
 
         for (let r = 0; r < size; r++) {
@@ -453,7 +453,7 @@ class UI {
     handleWin() {
         this.stopTimer();
         this.validateAndHighlight(); // Ensure clean
-        
+
         // Save solve to history
         const solveData = {
             size: this.game.size,
@@ -463,11 +463,11 @@ class UI {
             moveCount: this.moveCount
         };
         this.history.saveSolve(solveData);
-        
+
         // Get stats for this puzzle
         const stats = this.history.getPuzzleStats(this.game.size, this.game.seed);
         let message = "Puzzle Solved!";
-        
+
         if (stats.solveCount > 1) {
             message += ` (Solve #${stats.solveCount}`;
             if (this.seconds === stats.bestTime) {
@@ -475,7 +475,7 @@ class UI {
             }
             message += ")";
         }
-        
+
         this.messageArea.textContent = message;
         this.messageArea.className = 'message-area success';
     }
@@ -496,19 +496,19 @@ class UI {
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.tab === tab);
         });
-        
+
         // Update tab content
         document.querySelectorAll('.tab-content').forEach(content => {
             content.classList.toggle('active', content.id === `tab-${tab}`);
         });
-        
+
         // Refresh display
         this.updateStatsDisplay();
     }
 
     updateStatsDisplay() {
         const activeTab = document.querySelector('.tab-btn.active')?.dataset.tab;
-        
+
         if (activeTab === 'overview') {
             this.updateOverviewTab();
         } else if (activeTab === 'current') {
@@ -520,10 +520,10 @@ class UI {
 
     updateOverviewTab() {
         const stats = this.history.getOverallStats();
-        
+
         document.getElementById('stat-total-solves').textContent = stats.totalSolves;
         document.getElementById('stat-total-time').textContent = SolveHistory.formatTime(stats.totalTime);
-        
+
         const bySizeContainer = document.getElementById('stats-by-size');
         if (Object.keys(stats.bySize).length === 0) {
             bySizeContainer.innerHTML = '<div class="no-history">No puzzles solved yet</div>';
@@ -543,18 +543,18 @@ class UI {
 
     updateCurrentTab() {
         const stats = this.history.getPuzzleStats(this.game.size, this.game.seed);
-        
+
         document.getElementById('current-size').textContent = `${this.game.size}x${this.game.size}`;
         document.getElementById('current-seed').textContent = this.game.seed;
         document.getElementById('current-solve-count').textContent = stats.solveCount;
-        document.getElementById('current-best-time').textContent = stats.bestTime ? 
+        document.getElementById('current-best-time').textContent = stats.bestTime ?
             SolveHistory.formatTime(stats.bestTime) : '-';
     }
 
     updateHistoryTab() {
         const solves = this.history.getAllSolves();
         const list = document.getElementById('history-list');
-        
+
         if (solves.length === 0) {
             list.innerHTML = '<div class="no-history">No solve history yet</div>';
         } else {
@@ -587,7 +587,7 @@ class UI {
                     </div>
                 </div>
             `).join('');
-            
+
             // Attach event listeners to the buttons
             list.querySelectorAll('.share-history-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
@@ -598,7 +598,7 @@ class UI {
                     this.sharePuzzle(size, seed, difficulty);
                 });
             });
-            
+
             list.querySelectorAll('.view-history-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -612,7 +612,7 @@ class UI {
 
     sharePuzzle(size, seed, difficulty = 'medium') {
         const url = `${window.location.origin}${window.location.pathname}?g=${size}:${seed}:${difficulty}`;
-        
+
         navigator.clipboard.writeText(url).then(() => {
             this.showToast('Link copied to clipboard!');
         });
@@ -621,7 +621,7 @@ class UI {
     viewPuzzle(size, seed) {
         // Hide stats modal
         this.hideStats();
-        
+
         // Load the puzzle
         this.startNewGame({ size, seed });
     }
