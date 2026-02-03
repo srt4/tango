@@ -255,13 +255,24 @@ main {
     }
 
     /* Grid takes full width on mobile but respects height */
+    /* Grid sizing - prevent collapse */
     .game-board {
-        width: auto;
+        aspect-ratio: 1/1;
+        /* Default for portrait/mobile: fill width, let height be determined by aspect ratio */
+        width: 100%;
         height: auto;
+        /* Ensure it doesn't overflow parent container (safe guard) */
         max-width: 100%;
         max-height: 100%;
-        margin: 0;
-        aspect-ratio: 1/1;
+        margin: 0 auto;
+    }
+
+    @media (orientation: landscape) {
+        .game-board {
+            /* In landscape, fill height, let width be determined */
+            height: 100%;
+            width: auto;
+        }
     }
 
     /* Responsive cell sizing */
