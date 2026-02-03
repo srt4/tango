@@ -255,17 +255,17 @@ main {
     }
 
     /* Grid takes full width on mobile but respects height */
-    /* Grid sizing - prevent collapse */
+    /* Grid sizing - explicit robust sizing */
     .game-board {
-        aspect-ratio: 1/1;
-        /* Default for portrait/mobile: fill width, let height be determined by aspect ratio */
-        width: 100%;
+        width: auto;
         height: auto;
-        /* Ensure it doesn't overflow parent container (safe guard) */
         max-width: 100%;
         max-height: 100%;
         margin: 0 auto;
+        aspect-ratio: auto;
     }
+
+    /* Remove orientation specific override as we handle it in cells */
 
     @media (orientation: landscape) {
         .game-board {
@@ -277,19 +277,22 @@ main {
 
     /* Responsive cell sizing */
     .cell {
-        width: 100%;
-        height: 100%;
+        width: min(calc((100vw - 8px) / 6), calc((100dvh - 180px) / 6));
+        height: min(calc((100vw - 8px) / 6), calc((100dvh - 180px) / 6));
         aspect-ratio: 1/1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .game-board[data-size="8"] .cell {
-        width: auto;
-        height: auto;
+        width: min(calc((100vw - 8px) / 8), calc((100dvh - 180px) / 8));
+        height: min(calc((100vw - 8px) / 8), calc((100dvh - 180px) / 8));
     }
 
     .game-board[data-size="10"] .cell {
-        width: auto;
-        height: auto;
+        width: min(calc((100vw - 8px) / 10), calc((100dvh - 180px) / 10));
+        height: min(calc((100vw - 8px) / 10), calc((100dvh - 180px) / 10));
     }
 
     .game-board,

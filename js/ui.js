@@ -258,7 +258,7 @@ class UI {
         this.boardElement.innerHTML = '';
         const size = this.game.size;
 
-        this.boardElement.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+        this.boardElement.style.gridTemplateColumns = `repeat(${size}, auto)`;
         this.boardElement.dataset.size = size;
 
         for (let r = 0; r < size; r++) {
